@@ -1,10 +1,9 @@
-/*
+ /*
     source code from zone b we could use 
 
     http://www.asahi-net.or.jp/~cs8k-cyu/browser.html
     https://github.com/abagames/crisp-game-lib/blob/master/docs/zoneb/main.js
 */ 
-
 
 title = "ZONE B";
 
@@ -37,19 +36,19 @@ options = {
   seed: 15,
 };
 
-/**
- * @type {{
- * pos: Vector, angle: number, speed: number,
- * shotTicks: number, burstTicks: number, burstCount: number
- * turnTicks: number,
- * isReflecting: boolean
- * }[]}
- */
-let enemies;
-/** @type {{pos: Vector, width: number, angle: number}[]} */
-let walls;
-/** @type {{pos: Vector, angle: number, range: number, side: "player" | "enemy"}[]} */
-let bullets;
+// /**
+//  * @type {{
+//  * pos: Vector, angle: number, speed: number,
+//  * shotTicks: number, burstTicks: number, burstCount: number
+//  * turnTicks: number,
+//  * isReflecting: boolean
+//  * }[]}
+//  */
+// let enemies;
+// /** @type {{pos: Vector, width: number, angle: number}[]} */
+// // let walls;
+// /** @type {{pos: Vector, angle: number, range: number, side: "player" | "enemy"}[]} */
+// let bullets;
 /**
  * @type {{
  * pos: Vector, angle: number, speed: number,
@@ -87,25 +86,25 @@ function update() {
     circle = { pos: vec(50, 50), radius: 120 };
     nextCircle = { pos: vec(50, 50), radius: 60 };
     nextCircleTarget = { pos: vec(), radius: 0 };
-    enemies = times(9 + level * 7, () => {
-      return {
-        pos: vec(rnd(99), rnd(99)),
-        angle: rndi(4),
-        speed: 0,
-        shotTicks: rnd(200, 300),
-        burstTicks: 0,
-        burstCount: 0,
-        turnTicks: 0,
-        isReflecting: false,
-      };
-    });
-    walls = times(19, () => {
-      return {
-        pos: vec(rnd(9, 89), rnd(9, 89)),
-        width: rnd(5, 15),
-        angle: rndi(2),
-      };
-    });
+    // enemies = times(9 + level * 7, () => {
+    //   return {
+    //     pos: vec(rnd(99), rnd(99)),
+    //     angle: rndi(4),
+    //     speed: 0,
+    //     shotTicks: rnd(200, 300),
+    //     burstTicks: 0,
+    //     burstCount: 0,
+    //     turnTicks: 0,
+    //     isReflecting: false,
+    //   };
+    // });
+    // walls = times(19, () => {
+    //   return {
+    //     pos: vec(rnd(9, 89), rnd(9, 89)),
+    //     width: rnd(5, 15),
+    //     angle: rndi(2),
+    //   };
+    // });
     bullets = [];
     player = {
       pos: vec(50, 80),
@@ -146,6 +145,7 @@ function update() {
   if (nextCircle.radius < 60) {
     color("light_black");
     arc(nextCircle.pos, nextCircle.radius, 2);
+    // if statement below deals with shrinking the blue circle
     if (circleTicks > 9) {
       circle.pos.add(
         (nextCircle.pos.x - circle.pos.x) / circleTicks,
@@ -157,15 +157,15 @@ function update() {
     arc(circle.pos, circle.radius, 3);
   }
   color("yellow");
-  remove(walls, (w) => {
-    let c;
-    if (w.angle === 0) {
-      c = box(w.pos, w.width, 2);
-    } else {
-      c = box(w.pos, 2, w.width);
-    }
-    return c.isColliding.rect.blue;
-  });
+  // remove(walls, (w) => {
+  //   let c;
+  //   if (w.angle === 0) {
+  //     c = box(w.pos, w.width, 2);
+  //   } else {
+  //     c = box(w.pos, 2, w.width);
+  //   }
+  //   return c.isColliding.rect.blue;
+  // });
   remove(bullets, (b) => {
     const av = angleVels[b.angle];
     b.pos.add(av[0], av[1]);
@@ -182,60 +182,60 @@ function update() {
     b.range--;
     return b.range < 0;
   });
-  remove(enemies, (e) => {
-    const av = angleVels[e.angle];
-    e.pos.add(av[0] * e.speed, av[1] * e.speed);
-    const isShown = e.pos.distanceTo(player.pos) < shownRange;
-    if (isShown) {
-      color("black");
-      char("b", e.pos.x + av[0] * 2, e.pos.y + av[1] * 2, {
-        rotation: e.angle,
-      });
-    }
-    color(isShown ? "red" : "transparent");
-    const c = char("a", e.pos, { rotation: e.angle }).isColliding;
-    if (c.char.d) {
-      play("explosion");
-      addScore(multiplier, e.pos);
-      multiplier++;
-      return true;
-    }
-    if (c.rect.yellow || !e.pos.isInRect(0, 0, 99, 99)) {
-      if (!e.isReflecting) {
-        e.angle += 2;
-        e.isReflecting = true;
-      }
-    } else {
-      e.isReflecting = false;
-    }
-    if (e.shotTicks > 7) {
-      e.turnTicks--;
-    }
-    if (e.turnTicks < 0) {
-      e.angle++;
-      e.turnTicks = rnd(200, 300);
-    }
-    e.angle = wrap(e.angle, 0, 4);
-    e.shotTicks--;
-    if (e.shotTicks < 0) {
-      e.burstCount--;
-      if (e.burstCount < 0) {
-        e.shotTicks = rnd(100, 200);
-        e.burstCount = rndi(3, 7);
-      } else {
-        bullets.push({
-          pos: vec(e.pos.x + av[0] * 5, e.pos.y + av[1] * 5),
-          angle: e.angle,
-          range: 20,
-          side: "enemy",
-        });
-        e.shotTicks += 7;
-      }
-    }
-    e.speed += ((e.shotTicks < 7 ? 0 : 0.2) - e.speed) * 0.1;
-    checkCircleReflect(e);
-    e.pos.clamp(0, 99, 0, 99);
-  });
+  // remove(enemies, (e) => {
+  //   const av = angleVels[e.angle];
+  //   e.pos.add(av[0] * e.speed, av[1] * e.speed);
+  //   const isShown = e.pos.distanceTo(player.pos) < shownRange;
+  //   if (isShown) {
+  //     color("black");
+  //     char("b", e.pos.x + av[0] * 2, e.pos.y + av[1] * 2, {
+  //       rotation: e.angle,
+  //     });
+  //   }
+  //   color(isShown ? "red" : "transparent");
+  //   const c = char("a", e.pos, { rotation: e.angle }).isColliding;
+  //   if (c.char.d) {
+  //     play("explosion");
+  //     addScore(multiplier, e.pos);
+  //     multiplier++;
+  //     return true;
+  //   }
+  //   if (c.rect.yellow || !e.pos.isInRect(0, 0, 99, 99)) {
+  //     if (!e.isReflecting) {
+  //       e.angle += 2;
+  //       e.isReflecting = true;
+  //     }
+  //   } else {
+  //     e.isReflecting = false;
+  //   }
+  //   if (e.shotTicks > 7) {
+  //     e.turnTicks--;
+  //   }
+  //   if (e.turnTicks < 0) {
+  //     e.angle++;
+  //     e.turnTicks = rnd(200, 300);
+  //   }
+  //   e.angle = wrap(e.angle, 0, 4);
+  //   e.shotTicks--;
+  //   if (e.shotTicks < 0) {
+  //     e.burstCount--;
+  //     if (e.burstCount < 0) {
+  //       e.shotTicks = rnd(100, 200);
+  //       e.burstCount = rndi(3, 7);
+  //     } else {
+  //       bullets.push({
+  //         pos: vec(e.pos.x + av[0] * 5, e.pos.y + av[1] * 5),
+  //         angle: e.angle,
+  //         range: 20,
+  //         side: "enemy",
+  //       });
+  //       e.shotTicks += 7;
+  //     }
+  //   }
+  //   e.speed += ((e.shotTicks < 7 ? 0 : 0.2) - e.speed) * 0.1;
+  //   checkCircleReflect(e);
+  //   e.pos.clamp(0, 99, 0, 99);
+  // });
   const av = angleVels[player.angle];
   player.speed += ((input.isPressed ? 0 : 0.2) - player.speed) * 0.1;
   if (input.isJustReleased) {
@@ -245,18 +245,18 @@ function update() {
     }
   }
   player.shotTicks--;
-  if (input.isPressed && player.speed < 0.04) {
-    if (player.shotTicks < 0) {
-      play("hit");
-      bullets.push({
-        pos: vec(player.pos.x + av[0] * 5, player.pos.y + av[1] * 5),
-        angle: player.angle,
-        range: 20,
-        side: "player",
-      });
-      player.shotTicks = 7;
-    }
-  }
+  // if (input.isPressed && player.speed < 0.04) {
+  //   if (player.shotTicks < 0) {
+  //     play("hit");
+  //     bullets.push({
+  //       pos: vec(player.pos.x + av[0] * 5, player.pos.y + av[1] * 5),
+  //       angle: player.angle,
+  //       range: 20,
+  //       side: "player",
+  //     });
+  //     player.shotTicks = 7;
+  //   }
+  // }
   player.pos.add(av[0] * player.speed, av[1] * player.speed);
   checkCircleReflect(player);
   color("black");
@@ -274,14 +274,14 @@ function update() {
     end();
   }
   player.pos.clamp(0, 99, 0, 99);
-  if (c.rect.yellow || !player.pos.isInRect(0, 0, 99, 99)) {
-    if (!player.isReflecting) {
-      player.angle += 2;
-      player.isReflecting = true;
-    }
-  } else {
-    player.isReflecting = false;
-  }
+  // if (c.rect.yellow || !player.pos.isInRect(0, 0, 99, 99)) {
+  //   if (!player.isReflecting) {
+  //     player.angle += 2;
+  //     player.isReflecting = true;
+  //   }
+  // } else {
+  //   player.isReflecting = false;
+  // }
   player.angle = wrap(player.angle, 0, 4);
   if (levelClearTicks <= -60 && enemies.length === 0) {
     play("powerUp");
@@ -300,6 +300,10 @@ function update() {
     levelClearTicks--;
   }
 
+  /*
+  checks if player is colliding with the blue circle
+  if collides flip player 180 degrees, creating a bounce back in the opposite direction 
+  */
   function checkCircleReflect(o) {
     if (o.pos.distanceTo(circle.pos) < circle.radius) {
       return;
@@ -316,3 +320,4 @@ function update() {
     }
   }
 }
+addEventListener("load", onLoad);
