@@ -5,11 +5,10 @@
     https://github.com/abagames/crisp-game-lib/blob/master/docs/zoneb/main.js
 */ 
 
-title = "ZONE B";
+title = "B Drift";
 
 description = `
-[Tap]  Turn
-[Hold] Shot
+[Tap and release]  Turn
 `;
 
 characters = [
@@ -105,7 +104,7 @@ function update() {
     //     angle: rndi(2),
     //   };
     // });
-    bullets = [];
+    //bullets = [];
     player = {
       pos: vec(50, 80),
       angle: 3,
@@ -143,8 +142,9 @@ function update() {
       (nextCircleTarget.radius - nextCircle.radius) / (circleTicks + 1);
   }
   if (nextCircle.radius < 60) {
+    // setting outer circle
     color("light_black");
-    arc(nextCircle.pos, nextCircle.radius, 2);
+    arc(50, 50, 50, 3);
     // if statement below deals with shrinking the blue circle
     if (circleTicks > 9) {
       circle.pos.add(
@@ -153,98 +153,20 @@ function update() {
       );
       circle.radius += (nextCircle.radius - circle.radius) / circleTicks;
     }
+    // setting inner circle
     color("blue");
-    arc(circle.pos, circle.radius, 3);
+    arc(50, 50, 30, 3);
   }
-  color("yellow");
-  // remove(walls, (w) => {
-  //   let c;
-  //   if (w.angle === 0) {
-  //     c = box(w.pos, w.width, 2);
-  //   } else {
-  //     c = box(w.pos, 2, w.width);
-  //   }
-  //   return c.isColliding.rect.blue;
-  // });
-  remove(bullets, (b) => {
-    const av = angleVels[b.angle];
-    b.pos.add(av[0], av[1]);
-    const isShown =
-      b.side === "player" || b.pos.distanceTo(player.pos) < shownRange;
-    color(isShown ? (b.side === "enemy" ? "purple" : "cyan") : "transparent");
-    if (
-      char(b.side === "enemy" ? "c" : "d", b.pos, { rotation: b.angle })
-        .isColliding.rect.yellow ||
-      !b.pos.isInRect(0, 0, 99, 99)
-    ) {
-      return true;
-    }
-    b.range--;
-    return b.range < 0;
-  });
-  // remove(enemies, (e) => {
-  //   const av = angleVels[e.angle];
-  //   e.pos.add(av[0] * e.speed, av[1] * e.speed);
-  //   const isShown = e.pos.distanceTo(player.pos) < shownRange;
-  //   if (isShown) {
-  //     color("black");
-  //     char("b", e.pos.x + av[0] * 2, e.pos.y + av[1] * 2, {
-  //       rotation: e.angle,
-  //     });
-  //   }
-  //   color(isShown ? "red" : "transparent");
-  //   const c = char("a", e.pos, { rotation: e.angle }).isColliding;
-  //   if (c.char.d) {
-  //     play("explosion");
-  //     addScore(multiplier, e.pos);
-  //     multiplier++;
-  //     return true;
-  //   }
-  //   if (c.rect.yellow || !e.pos.isInRect(0, 0, 99, 99)) {
-  //     if (!e.isReflecting) {
-  //       e.angle += 2;
-  //       e.isReflecting = true;
-  //     }
-  //   } else {
-  //     e.isReflecting = false;
-  //   }
-  //   if (e.shotTicks > 7) {
-  //     e.turnTicks--;
-  //   }
-  //   if (e.turnTicks < 0) {
-  //     e.angle++;
-  //     e.turnTicks = rnd(200, 300);
-  //   }
-  //   e.angle = wrap(e.angle, 0, 4);
-  //   e.shotTicks--;
-  //   if (e.shotTicks < 0) {
-  //     e.burstCount--;
-  //     if (e.burstCount < 0) {
-  //       e.shotTicks = rnd(100, 200);
-  //       e.burstCount = rndi(3, 7);
-  //     } else {
-  //       bullets.push({
-  //         pos: vec(e.pos.x + av[0] * 5, e.pos.y + av[1] * 5),
-  //         angle: e.angle,
-  //         range: 20,
-  //         side: "enemy",
-  //       });
-  //       e.shotTicks += 7;
-  //     }
-  //   }
-  //   e.speed += ((e.shotTicks < 7 ? 0 : 0.2) - e.speed) * 0.1;
-  //   checkCircleReflect(e);
-  //   e.pos.clamp(0, 99, 0, 99);
-  // });
+  //color("yellow");
   const av = angleVels[player.angle];
-  player.speed += ((input.isPressed ? 0 : 0.2) - player.speed) * 0.1;
+  player.speed += ((input.isPressed ? 0 : 3) - player.speed) * 0.1;
   if (input.isJustReleased) {
     if (player.speed > 0.04) {
       play("laser");
       player.angle = wrap(player.angle + 1, 0, 4);
     }
   }
-  player.shotTicks--;
+  // player.shotTicks--;
   // if (input.isPressed && player.speed < 0.04) {
   //   if (player.shotTicks < 0) {
   //     play("hit");
