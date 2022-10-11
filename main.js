@@ -8,7 +8,8 @@
 title = "B Drift";
 
 description = `
-[Tap and release]  Turn
+  [Tap/Release]  
+       Turn
 `;
 
 characters = [
@@ -85,26 +86,6 @@ function update() {
     circle = { pos: vec(50, 50), radius: 120 };
     nextCircle = { pos: vec(50, 50), radius: 60 };
     nextCircleTarget = { pos: vec(), radius: 0 };
-    // enemies = times(9 + level * 7, () => {
-    //   return {
-    //     pos: vec(rnd(99), rnd(99)),
-    //     angle: rndi(4),
-    //     speed: 0,
-    //     shotTicks: rnd(200, 300),
-    //     burstTicks: 0,
-    //     burstCount: 0,
-    //     turnTicks: 0,
-    //     isReflecting: false,
-    //   };
-    // });
-    // walls = times(19, () => {
-    //   return {
-    //     pos: vec(rnd(9, 89), rnd(9, 89)),
-    //     width: rnd(5, 15),
-    //     angle: rndi(2),
-    //   };
-    // });
-    //bullets = [];
     player = {
       pos: vec(50, 80),
       angle: 3,
@@ -141,23 +122,13 @@ function update() {
     nextCircle.radius +=
       (nextCircleTarget.radius - nextCircle.radius) / (circleTicks + 1);
   }
-  if (nextCircle.radius < 60) {
     // setting outer circle
     color("light_black");
     arc(50, 50, 50, 3);
-    // if statement below deals with shrinking the blue circle
-    if (circleTicks > 9) {
-      circle.pos.add(
-        (nextCircle.pos.x - circle.pos.x) / circleTicks,
-        (nextCircle.pos.y - circle.pos.y) / circleTicks
-      );
-      circle.radius += (nextCircle.radius - circle.radius) / circleTicks;
-    }
+    
     // setting inner circle
     color("blue");
     arc(50, 50, 30, 3);
-  }
-  //color("yellow");
   const av = angleVels[player.angle];
   player.speed += ((input.isPressed ? 0 : 3) - player.speed) * 0.1;
   if (input.isJustReleased) {
@@ -166,19 +137,6 @@ function update() {
       player.angle = wrap(player.angle + 1, 0, 4);
     }
   }
-  // player.shotTicks--;
-  // if (input.isPressed && player.speed < 0.04) {
-  //   if (player.shotTicks < 0) {
-  //     play("hit");
-  //     bullets.push({
-  //       pos: vec(player.pos.x + av[0] * 5, player.pos.y + av[1] * 5),
-  //       angle: player.angle,
-  //       range: 20,
-  //       side: "player",
-  //     });
-  //     player.shotTicks = 7;
-  //   }
-  // }
   player.pos.add(av[0] * player.speed, av[1] * player.speed);
   checkCircleReflect(player);
   color("black");
@@ -196,14 +154,6 @@ function update() {
     end();
   }
   player.pos.clamp(0, 99, 0, 99);
-  // if (c.rect.yellow || !player.pos.isInRect(0, 0, 99, 99)) {
-  //   if (!player.isReflecting) {
-  //     player.angle += 2;
-  //     player.isReflecting = true;
-  //   }
-  // } else {
-  //   player.isReflecting = false;
-  // }
   player.angle = wrap(player.angle, 0, 4);
   if (levelClearTicks <= -60 && enemies.length === 0) {
     play("powerUp");
