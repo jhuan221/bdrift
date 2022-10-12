@@ -8,8 +8,8 @@
 title = "B Drift";
 
 description = `
-   [Tap & release]  
-        Turn
+  [Tap/Release]  
+       Turn
 `;
 
 characters = [
@@ -93,26 +93,6 @@ function update() {
     //circle = { pos: vec(50, 50), radius: 120 };
     // nextCircle = { pos: vec(50, 50), radius: 60 };
     // nextCircleTarget = { pos: vec(), radius: 0 };
-    // enemies = times(9 + level * 7, () => {
-    //   return {
-    //     pos: vec(rnd(99), rnd(99)),
-    //     angle: rndi(4),
-    //     speed: 0,
-    //     shotTicks: rnd(200, 300),
-    //     burstTicks: 0,
-    //     burstCount: 0,
-    //     turnTicks: 0,
-    //     isReflecting: false,
-    //   };
-    // });
-    // walls = times(19, () => {
-    //   return {
-    //     pos: vec(rnd(9, 89), rnd(9, 89)),
-    //     width: rnd(5, 15),
-    //     angle: rndi(2),
-    //   };
-    // });
-    // bullets = [];
     player = {
       pos: vec(50, 10),
       angle: 3,
